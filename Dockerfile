@@ -1,3 +1,4 @@
+
 FROM php:8.1-apache
 
 # Install necessary libraries
@@ -25,14 +26,20 @@ RUN composer install
 # Change ownership of our applications
 RUN chown -R www-data:www-data /var/www/html
 
+# Install mbstring extension again for Laravel
 RUN docker-php-ext-install mbstring
 
+# Copy .env.example to .env
 COPY .env.example .env
+
+# Generate a new application key
 RUN php artisan key:generate
 
 # Expose port 80
 EXPOSE 80
 
-# Adjusting Apache configurations
+# Enable Apache rewrite module
 RUN a2enmod rewrite
+
+# Copy Apache configuration file
 COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
